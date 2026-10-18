@@ -39,6 +39,42 @@ activities = {
         "max_participants": 30,
         "participants": ["john@mergington.edu", "olivia@mergington.edu"]
     },
+    "Soccer Team": {
+        "description": "Practice teamwork and compete in soccer matches",
+        "schedule": "Tuesdays and Thursdays, 4:00 PM - 5:30 PM",
+        "max_participants": 18,
+        "participants": []
+    },
+    "Basketball Club": {
+        "description": "Develop shooting, passing, and defensive skills",
+        "schedule": "Wednesdays, 3:30 PM - 5:00 PM",
+        "max_participants": 14,
+        "participants": []
+    },
+    "Drama Club": {
+        "description": "Explore acting, stage presence, and creative performance",
+        "schedule": "Mondays and Wednesdays, 3:45 PM - 5:00 PM",
+        "max_participants": 15,
+        "participants": []
+    },
+    "Art Studio": {
+        "description": "Create paintings, sketches, and mixed media projects",
+        "schedule": "Thursdays, 3:30 PM - 5:00 PM",
+        "max_participants": 16,
+        "participants": []
+    },
+    "Math Olympiad": {
+        "description": "Solve challenging problems and prepare for competitions",
+        "schedule": "Tuesdays, 3:30 PM - 4:30 PM",
+        "max_participants": 10,
+        "participants": []
+    },
+    "Science Club": {
+        "description": "Conduct experiments and explore STEM topics in depth",
+        "schedule": "Fridays, 2:30 PM - 4:00 PM",
+        "max_participants": 20,
+        "participants": []
+    },
     "Basketball Team": {
         "description": "Practice basketball skills and compete in games",
         "schedule": "Tuesdays and Thursdays, 4:00 PM - 5:30 PM",
@@ -54,18 +90,6 @@ activities = {
     "Art Club": {
         "description": "Explore drawing, painting, and other visual arts",
         "schedule": "Wednesdays, 3:30 PM - 5:00 PM",
-        "max_participants": 15,
-        "participants": []
-    },
-    "Drama Club": {
-        "description": "Develop acting skills and put on theatrical productions",
-        "schedule": "Fridays, 3:30 PM - 5:00 PM",
-        "max_participants": 20,
-        "participants": []
-    },
-    "Science Club": {
-        "description": "Explore scientific topics through experiments and projects",
-        "schedule": "Tuesdays, 3:30 PM - 5:00 PM",
         "max_participants": 15,
         "participants": []
     },

@@ -5,6 +5,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const emailInput = document.getElementById("email");
   const messageDiv = document.getElementById("message");
 
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (character) => {
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      };
+      return entities[character];
+    });
+  }
+
   // Function to fetch activities from API
   async function fetchActivities() {
     try {
@@ -16,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Clear loading message
       activitiesList.innerHTML = "";
-      activitySelect.length = 1;
+      activitySelect.innerHTML = '<option value="">-- Select an activity --</option>';
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
@@ -24,56 +37,42 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.className = "activity-card";
 
         const spotsLeft = details.max_participants - details.participants.length;
+        const participantsHtml = details.participants.length
+          ? `<ul class="participants-list">${details.participants
+              .map(
+                (email) => `
+                  <li class="participant-item">
+                    <span>${escapeHtml(email)}</span>
+                    <button
+                      type="button"
+                      class="unregister-button"
+                      data-activity-name="${escapeHtml(name)}"
+                      data-participant-email="${escapeHtml(email)}"
+                      aria-label="Unregister from ${escapeHtml(name)}"
+                      title="Unregister"
+                      ${emailInput.value.trim() !== email ? "hidden" : ""}
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m5 4v7m4-7v7" />
+                      </svg>
+                    </button>
+                  </li>
+                `
+              )
+              .join("")}</ul>`
+          : '<p class="no-participants">No students signed up yet.</p>';
 
         activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
+          <h4>${escapeHtml(name)}</h4>
+          <p>${escapeHtml(details.description)}</p>
+          <p><strong>Schedule:</strong> ${escapeHtml(details.schedule)}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <div class="participants-section">
+            <h5>Participants</h5>
+            ${participantsHtml}
+          </div>
         `;
 
-        const participantsSection = document.createElement("section");
-        participantsSection.className = "participants-section";
-
-        const participantsHeading = document.createElement("h5");
-        participantsHeading.textContent = "Participants";
-        participantsSection.appendChild(participantsHeading);
-
-        if (details.participants.length > 0) {
-          const participantsList = document.createElement("ul");
-
-          details.participants.forEach((participant) => {
-            const participantItem = document.createElement("li");
-            const participantRow = document.createElement("div");
-            participantRow.className = "participant-row";
-
-            const participantEmail = document.createElement("span");
-            participantEmail.textContent = participant;
-            participantRow.appendChild(participantEmail);
-
-            const unregisterButton = document.createElement("button");
-            unregisterButton.type = "button";
-            unregisterButton.className = "unregister-button";
-            unregisterButton.textContent = "Unregister";
-            unregisterButton.dataset.activityName = name;
-            unregisterButton.dataset.participantEmail = participant;
-            unregisterButton.setAttribute("aria-label", `Unregister from ${name}`);
-            unregisterButton.hidden = emailInput.value.trim() !== participant;
-            participantRow.appendChild(unregisterButton);
-
-            participantItem.appendChild(participantRow);
-            participantsList.appendChild(participantItem);
-          });
-
-          participantsSection.appendChild(participantsList);
-        } else {
-          const emptyState = document.createElement("p");
-          emptyState.className = "participants-empty";
-          emptyState.textContent = "No participants yet.";
-          participantsSection.appendChild(emptyState);
-        }
-
-        activityCard.appendChild(participantsSection);
         activitiesList.appendChild(activityCard);
 
         // Add option to select dropdown
@@ -96,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   activitiesList.addEventListener("click", async (event) => {
     const button = event.target.closest(".unregister-button");
-    if (!button || button.hidden) {
+    if (!button || button.hidden || emailInput.value.trim() !== button.dataset.participantEmail) {
       return;
     }
 
@@ -111,10 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!response.ok) {
         messageDiv.textContent = result.detail || "Unable to unregister.";
-        messageDiv.className = "error";
+        messageDiv.className = "message error";
       } else {
         messageDiv.textContent = result.message;
-        messageDiv.className = "success";
+        messageDiv.className = "message success";
         await fetchActivities();
       }
 
@@ -124,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 5000);
     } catch (error) {
       messageDiv.textContent = "Failed to unregister. Please try again.";
-      messageDiv.className = "error";
+      messageDiv.className = "message error";
       messageDiv.classList.remove("hidden");
       console.error("Error unregistering:", error);
     }
@@ -149,12 +148,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         messageDiv.textContent = result.message;
-        messageDiv.className = "success";
+        messageDiv.className = "message success";
         signupForm.reset();
         await fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
-        messageDiv.className = "error";
+        messageDiv.className = "message error";
       }
 
       messageDiv.classList.remove("hidden");
